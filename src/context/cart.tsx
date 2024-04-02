@@ -4,15 +4,19 @@ import { CartItem } from "../types/cart";
 interface ICartContext {
   cartItems: CartItem[];
   addToCart: (id: number) => void;
+  decreaseCartQuantity: (id: number) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
+  cartQuantity: number;
 }
 
 export const CartContext = createContext<ICartContext>({
   cartItems: [],
   addToCart: () => {},
-  removeFromCart: () => {},
+  decreaseCartQuantity: () => {},
   clearCart: () => {},
+  cartQuantity: 0,
+  removeFromCart: () => {},
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -20,6 +24,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.getItem("cartItems")
       ? JSON.parse(localStorage.getItem("cartItems") || "")
       : []
+  );
+
+  const cartQuantity = cartItems.reduce(
+    (quantity: number, item: CartItem) => item.quantity + quantity,
+    0
   );
 
   const addToCart = (id: number) => {
@@ -38,7 +47,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const removeFromCart = (id: number) => {
+  const decreaseCartQuantity = (id: number) => {
     const isItemInCart = cartItems.find((cartItem) => cartItem.id === id);
 
     if (isItemInCart) {
@@ -53,6 +62,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           )
         );
       }
+    }
+  };
+
+  const removeFromCart = (id: number) => {
+    const isItemInCart = cartItems.find((cartItem) => cartItem.id === id);
+
+    if (isItemInCart) {
+      setCartItems(cartItems.filter((cartItem) => cartItem.id !== id));
     }
   };
 
@@ -76,8 +93,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       value={{
         cartItems,
         addToCart,
-        removeFromCart,
+        decreaseCartQuantity,
         clearCart,
+        cartQuantity,
+        removeFromCart,
       }}
     >
       {children}
