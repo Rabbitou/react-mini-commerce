@@ -7,8 +7,12 @@ export const getAllProducts = async () => {
 
 export const getAllCategories = async () => {
   return axios.get<string[]>("/categories").then((res) => res.data);
-}
+};
 
 export const getProductsByCategory = async (category: string) => {
   return axios.get<Product[]>(`/category/${category}`).then((res) => res.data);
-}
+};
+
+export const getProductById = async (id: number) => {
+  return axios.get<Product>(`${id}`).then((res) => res.data);
+};

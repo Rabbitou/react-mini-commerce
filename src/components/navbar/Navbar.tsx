@@ -17,9 +17,11 @@ export default function Navbar() {
         >
           Home
         </Link>
-        <p className="px-3 font-semibold capitalize bg-gradient-to-r from-sky-400 to-orange-400 text-transparent bg-clip-text">
-          E-Store
-        </p>
+        <Link to={"/"}>
+          <p className="px-3 font-semibold capitalize bg-gradient-to-r from-sky-400 to-orange-400 text-transparent bg-clip-text">
+            E-Store
+          </p>
+        </Link>
         <div
           className="mx-4 p-1 cursor-pointer relative"
           onClick={() => setShowCart((prev) => !prev)}

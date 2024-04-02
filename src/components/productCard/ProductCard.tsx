@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
 import { Product } from "../../types/product";
 import Button from "../ui/Button";
@@ -10,13 +11,13 @@ export default function ProductCard({
   data: Product;
   style?: string;
 }) {
-  const { cartItems, addToCart } = useCart();
+  const { addToCart } = useCart();
 
   const price = (data.price + "").split(".");
 
   return (
     <article
-      className={`flex flex-col shadow-md bg-white text-black min-h-[23rem] rounded-lg overflow-hidden transition-all hover:scale-105 ${style}`}
+      className={`flex flex-col shadow-md bg-white text-black h-[24rem] rounded-lg overflow-hidden transition-all hover:scale-105 ${style}`}
     >
       <div className="relative">
         <img
@@ -28,9 +29,8 @@ export default function ProductCard({
         <div
           className={`w-full h-full flex hover:opacity-50 opacity-0 justify-center items-center absolute top-0 left-0 bg-black transition-all`}
         >
-          <Button style="border w-1/3 p-1 text-sm text-white">
-            {/* <Link to={`/products/${data.id}`}>View Details</Link> */}
-            View Details
+          <Button style="border w-1/3 p-1 text-sm text-white hover:bg-white hover:text-black transition-all duration-300">
+            <Link to={`/product/${data.id}`}>View Details</Link>
           </Button>
         </div>
       </div>
