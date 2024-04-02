@@ -58,8 +58,7 @@ export default function ProductPage() {
         <div className="h-full w-full flex items-center justify-center my-32">
           <Loader />
         </div>
-      ) : null}
-      {product ? (
+      ) : product ? (
         <section className="flex justify-center items-center h-[calc(100% - 40px)] w-[calc(100% - 40px)] bg-gray-200 rounded m-10 transition-all">
           <article className="flex">
             <div className="p-5">
