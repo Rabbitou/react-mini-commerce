@@ -54,6 +54,7 @@ export default function Home() {
         )
       : setProductList(data || []);
   }, [selectedCategory, data]);
+  if (error) console.log(error);
 
   useEffect(() => {
     debouncedSearchValue

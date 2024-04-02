@@ -1,7 +1,6 @@
-import React from "react";
-import { Product } from "../../types/product";
-import { CartItem } from "../../types/cart";
 import { useCart } from "../../hooks/useCart";
+import { CartItem } from "../../types/cart";
+import { Product } from "../../types/product";
 import Button from "../ui/Button";
 
 export default function CartProductCard({
