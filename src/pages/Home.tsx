@@ -79,7 +79,7 @@ export default function Home() {
           <Loader />
         </div>
       ) : (
-        <section className="flex flex-col h-full mx-auto max-w-4xl justify-center mt-2">
+        <section className="flex flex-col h-full mx-auto max-w-4xl justify-center items-center mt-2">
           <div className="flex w-full justify-between p-2">
             <div className="bg-gray-200 h-9 flex items-center gap-1 text-gray-700 rounded-sm p-2">
               <SearchIcon width={25} height={25} color="gray" />
@@ -102,7 +102,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-4 m-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
             {productList
               ? productList.map((item) => (
                   <ProductCard

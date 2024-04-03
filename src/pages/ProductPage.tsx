@@ -24,7 +24,7 @@ export default function ProductPage() {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
-        const res = await getProductById(parseInt(id || "1"));
+        const res = await getProductById(parseInt(id || "0"));
         setProduct(res);
       } catch (error) {
         // setError("Something went wrong !");
@@ -41,7 +41,9 @@ export default function ProductPage() {
         try {
           setIsLoading(true);
           const res = await getProductsByCategory(product.category);
-          setProductRelated(res);
+          setProductRelated(
+            res.filter((item) => item.id !== parseInt(id || "0"))
+          );
         } catch (error) {
           // setError("Something went wrong !");
         } finally {
@@ -59,13 +61,13 @@ export default function ProductPage() {
           <Loader />
         </div>
       ) : product ? (
-        <section className="flex justify-center items-center h-[calc(100% - 40px)] w-[calc(100% - 40px)] bg-gray-200 rounded m-10 transition-all">
-          <article className="flex">
+        <section className="flex justify-center items-center h-[calc(100% - 40px)] w-[calc(100% - 40px)] border rounded m-10 transition-all">
+          <article className="flex flex-col md:grid grid-cols-2 place-items-center">
             <div className="p-5">
               <img
                 src={product.image}
                 alt={product.title}
-                className="h-[300px] w-[300px] object-cover rounded-lg overflow-hidden"
+                className="h-[300px] md:h-[400px] object-cover rounded-lg overflow-hidden"
               />
             </div>
             <div className="flex flex-col justify-between items-center">
