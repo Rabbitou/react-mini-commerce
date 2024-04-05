@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getAllCategories, getAllProducts } from "../action";
 import ProductCard from "../components/productCard/ProductCard";
 import Loader from "../components/ui/Loader";
@@ -10,7 +10,6 @@ import { Product } from "../types/product";
 export default function Home() {
   const [data, setData] = useState<Product[] | null>(null);
   const [selectList, setSelectList] = useState<string[]>([]);
-  const [productList, setProductList] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 200);
@@ -21,8 +20,12 @@ export default function Home() {
     const fetchApi = async () => {
       try {
         setIsLoading(true);
-        const res = await getAllProducts();
-        setData(res);
+        const [product, category] = await Promise.all([
+          getAllProducts(),
+          getAllCategories(),
+        ]);
+        setData(product);
+        setSelectList(category);
       } catch (error) {
         setError("Something went wrong !");
       } finally {
@@ -32,45 +35,28 @@ export default function Home() {
     fetchApi();
   }, []);
 
-  useEffect(() => {
-    const fetchApi = async () => {
-      try {
-        setIsLoading(true);
-        const res = await getAllCategories();
-        setSelectList(res);
-      } catch (error) {
-        setError("Something went wrong !");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchApi();
-  }, []);
+  // useEffect(() => {
+  //   selectedCategory
+  //     ? setProductList(
+  //         data ? data.filter((item) => item.category === selectedCategory) : []
+  //       )
+  //     : setProductList(data || []);
+  // }, [selectedCategory, data]);
 
-  useEffect(() => {
-    selectedCategory
-      ? setProductList(
-          data ? data.filter((item) => item.category === selectedCategory) : []
+  const filteredProductCategory = useMemo(() => {
+    if (!data) return [];
+    const tmp = selectedCategory
+      ? data.filter((item) => item.category === selectedCategory)
+      : data;
+    return debouncedSearchValue
+      ? tmp.filter(
+          (item) =>
+            item.description.toLowerCase().includes(debouncedSearchValue) ||
+            item.title.toLowerCase().includes(debouncedSearchValue)
         )
-      : setProductList(data || []);
-  }, [selectedCategory, data]);
+      : tmp;
+  }, [selectedCategory, data, debouncedSearchValue]);
   if (error) console.log(error);
-
-  useEffect(() => {
-    debouncedSearchValue
-      ? setProductList(
-          data
-            ? data.filter(
-                (item) =>
-                  item.description
-                    .toLowerCase()
-                    .includes(debouncedSearchValue) ||
-                  item.title.toLowerCase().includes(debouncedSearchValue)
-              )
-            : []
-        )
-      : setProductList(data || []);
-  }, [debouncedSearchValue, data]);
 
   return (
     <>
@@ -79,14 +65,12 @@ export default function Home() {
           <Loader />
         </div>
       ) : (
-        <section className="flex flex-col h-full mx-auto max-w-4xl justify-center items-center mt-2">
+        <section className="flex flex-col h-full mx-auto max-w-4xl justify-center mt-2">
           <div className="flex w-full justify-between p-2">
             <div className="bg-gray-200 h-9 flex items-center gap-1 text-gray-700 rounded-sm p-2">
               <SearchIcon width={25} height={25} color="gray" />
               <input
                 type="text"
-                name=""
-                id=""
                 className="outline-none bg-transparent"
                 placeholder="Search..."
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -94,7 +78,7 @@ export default function Home() {
                 }
               />
             </div>
-            <div className="">
+            <div>
               <Select
                 defaultValue="Select category..."
                 options={selectList}
@@ -102,9 +86,9 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
-            {productList
-              ? productList.map((item) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-4 m-4">
+            {filteredProductCategory
+              ? filteredProductCategory.map((item) => (
                   <ProductCard
                     key={item.id}
                     data={item}
