@@ -7,18 +7,19 @@ import Rating from "../components/productCard/Rating";
 import Button from "../components/ui/Button";
 import Loader from "../components/ui/Loader";
 import SwiperBox from "../components/ui/SwiperBox";
-import { useCart } from "../hooks/useCart";
+import { addToCart } from "../store/cart";
+import { useAppDispatch } from "../store";
 import { Product } from "../types/product";
 
 export default function ProductPage() {
-  const { addToCart } = useCart();
-
   const { id } = useParams();
   const [product, setProduct] = useState<Product>();
   const [isLoading, setIsLoading] = useState(false);
   const [productRelated, setProductRelated] = useState<Product[]>([]);
 
   const price = product ? (product.price + "").split(".") : "";
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -91,7 +92,7 @@ export default function ProductPage() {
               </div>
               <Button
                 style="bg-sky-400 py-2 text-white mb-5 max-w-[400px] min-w-[150px] rounded"
-                onClick={() => addToCart(product.id)}
+                onClick={() => dispatch(addToCart(product.id))}
               >
                 <p className="capitalize">add to cart</p>
               </Button>

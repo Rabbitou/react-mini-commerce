@@ -35,14 +35,6 @@ export default function Home() {
     fetchApi();
   }, []);
 
-  // useEffect(() => {
-  //   selectedCategory
-  //     ? setProductList(
-  //         data ? data.filter((item) => item.category === selectedCategory) : []
-  //       )
-  //     : setProductList(data || []);
-  // }, [selectedCategory, data]);
-
   const filteredProductCategory = useMemo(() => {
     if (!data) return [];
     const tmp = selectedCategory

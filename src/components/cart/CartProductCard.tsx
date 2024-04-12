@@ -1,4 +1,9 @@
-import { useCart } from "../../hooks/useCart";
+import {
+  addToCart,
+  decreaseCartQuantity,
+  removeFromCart,
+} from "../../store/cart";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { CartItem } from "../../types/cart";
 import { Product } from "../../types/product";
 import Button from "../ui/Button";
@@ -10,7 +15,7 @@ export default function CartProductCard({
   product: Product;
   cartProduct: CartItem;
 }) {
-  const { addToCart, decreaseCartQuantity, removeFromCart } = useCart();
+  const dispatch = useAppDispatch();
 
   return (
     <div className="flex justify-start items-center space-x-2 lg:space-x-7 p-4 rounded-3xl hover:bg-bg-secondary">
@@ -26,7 +31,7 @@ export default function CartProductCard({
 
           <div className="flex justify-start items-center text-xs lg:text-sm space-x-2">
             <Button
-              onClick={() => decreaseCartQuantity(cartProduct?.id)}
+              onClick={() => dispatch(decreaseCartQuantity(cartProduct?.id))}
               style="px-1 py-1 cursor-pointer rounded outline-none hover:opacity-40 disabled:opacity-40 disabled:cursor-default"
               disabled={cartProduct?.quantity === 1}
             >
@@ -51,7 +56,7 @@ export default function CartProductCard({
 
             <span className="text-primary">{cartProduct.quantity}</span>
             <Button
-              onClick={() => addToCart(cartProduct.id)}
+              onClick={() => dispatch(addToCart(cartProduct.id))}
               style="px-1 py-1 cursor-pointer rounded outline-none hover:opacity-40 disabled:opacity-40 disabled:cursor-default"
             >
               {" "}
@@ -83,7 +88,7 @@ export default function CartProductCard({
             }).format(product!.price * cartProduct.quantity)}
           </p>
           <Button
-            onClick={() => removeFromCart(product!.id)}
+            onClick={() => dispatch(removeFromCart(product!.id))}
             style={"cursor-pointer hover:opacity-40"}
           >
             {" "}

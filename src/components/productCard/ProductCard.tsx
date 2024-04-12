@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { useCart } from "../../hooks/useCart";
+import { addToCart } from "../../store/cart";
+import { useAppDispatch } from "../../store";
 import { Product } from "../../types/product";
 import Button from "../ui/Button";
 import Rating from "./Rating";
@@ -11,7 +12,7 @@ export default function ProductCard({
   data: Product;
   style?: string;
 }) {
-  const { addToCart } = useCart();
+  const dispatch = useAppDispatch();
 
   const price = (data.price + "").split(".");
 
@@ -46,7 +47,7 @@ export default function ProductCard({
         </div>
         <Button
           style="bg-sky-400 py-2 text-white"
-          onClick={() => addToCart(data.id)}
+          onClick={() => dispatch(addToCart(data.id))}
         >
           <p className="capitalize">add to cart</p>
         </Button>
