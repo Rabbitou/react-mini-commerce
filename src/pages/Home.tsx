@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { getAllCategories, getAllProducts } from "../action";
+import { useMemo, useState } from "react";
+import { useGetAllProductsQuery } from "../action";
 import ProductCard from "../components/productCard/ProductCard";
 import Loader from "../components/ui/Loader";
 import SearchIcon from "../components/ui/SearchIcon";
@@ -14,32 +14,15 @@ export default function Home() {
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 200);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchApi = async () => {
-      try {
-        setIsLoading(true);
-        const [product, category] = await Promise.all([
-          getAllProducts(),
-          getAllCategories(),
-        ]);
-        setData(product);
-        setSelectList(category);
-      } catch (error) {
-        setError("Something went wrong !");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchApi();
-  }, []);
+  const { allProducts, isLoading } = useGetAllProductsQuery();
 
   const filteredProductCategory = useMemo(() => {
-    if (!data) return [];
+    if (!allProducts) return [];
     const tmp = selectedCategory
-      ? data.filter((item) => item.category === selectedCategory)
-      : data;
+      ? allProducts.filter((item) => item.category === selectedCategory)
+      : allProducts;
     return debouncedSearchValue
       ? tmp.filter(
           (item) =>
@@ -47,7 +30,7 @@ export default function Home() {
             item.title.toLowerCase().includes(debouncedSearchValue)
         )
       : tmp;
-  }, [selectedCategory, data, debouncedSearchValue]);
+  }, [selectedCategory, allProducts, debouncedSearchValue]);
   if (error) console.log(error);
 
   return (
