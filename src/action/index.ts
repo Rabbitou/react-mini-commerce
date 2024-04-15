@@ -1,6 +1,5 @@
-import axios from "axios";
-import { Product } from "../types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Product } from "../types/product";
 
 export const storeApi = createApi({
   reducerPath: "storeApi",
@@ -20,21 +19,6 @@ export const storeApi = createApi({
     }),
   }),
 });
-// export const getAllProducts = async () => {
-//   return axios.get<Product[]>("").then((res) => res.data);
-// };
-
-// export const getAllCategories = async () => {
-//   return axios.get<string[]>("/categories").then((res) => res.data);
-// };
-
-// export const getProductsByCategory = async (category: string) => {
-//   return axios.get<Product[]>(`/category/${category}`).then((res) => res.data);
-// };
-
-// export const getProductById = async (id: number) => {
-//   return axios.get<Product>(`${id}`).then((res) => res.data);
-// };
 
 export const {
   useGetAllProductsQuery,

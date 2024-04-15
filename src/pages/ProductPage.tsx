@@ -1,59 +1,37 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { SwiperSlide } from "swiper/react";
-import { getProductById, getProductsByCategory } from "../action";
+import {
+  useGetProductByIdQuery,
+  useGetProductsByCategoryQuery,
+} from "../action";
 import ProductCard from "../components/productCard/ProductCard";
 import Rating from "../components/productCard/Rating";
 import Button from "../components/ui/Button";
 import Loader from "../components/ui/Loader";
 import SwiperBox from "../components/ui/SwiperBox";
-import { addToCart } from "../store/cart";
 import { useAppDispatch } from "../store";
-import { Product } from "../types/product";
+import { addToCart } from "../store/cart";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState<Product>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [productRelated, setProductRelated] = useState<Product[]>([]);
-
-  const price = product ? (product.price + "").split(".") : "";
 
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setIsLoading(true);
-        const res = await getProductById(parseInt(id || "0"));
-        setProduct(res);
-      } catch (error) {
-        // setError("Something went wrong !");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProduct();
-  }, [id]);
+  const { data: product, isLoading } = useGetProductByIdQuery(
+    parseInt(id || "0")
+  );
 
-  useEffect(() => {
-    if (product) {
-      const fetchProductRelated = async () => {
-        try {
-          setIsLoading(true);
-          const res = await getProductsByCategory(product.category);
-          setProductRelated(
-            res.filter((item) => item.id !== parseInt(id || "0"))
-          );
-        } catch (error) {
-          // setError("Something went wrong !");
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchProductRelated();
-    }
-  }, [product]);
+  const { data: productRelated, isLoading: isLoadingRelated } =
+    useGetProductsByCategoryQuery(product?.category || "");
+
+  const relatedProductsFiltered = useMemo(() => {
+    return productRelated
+      ? productRelated.filter((item) => item.id !== parseInt(id || "0"))
+      : [];
+  }, [productRelated, id]);
+
+  const price = product ? (product.price + "").split(".") : "";
 
   return (
     <>
@@ -102,9 +80,9 @@ export default function ProductPage() {
       ) : null}
       <div className="text-black">
         <h2 className="text-center font-bold text-4xl">Related Products</h2>
-        {productRelated ? (
+        {!isLoadingRelated ? (
           <SwiperBox>
-            {productRelated.map((item) => (
+            {relatedProductsFiltered.map((item) => (
               <SwiperSlide key={item.id} className="!w-[250px]">
                 <ProductCard data={item} />
               </SwiperSlide>

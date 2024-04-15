@@ -1,28 +1,24 @@
 import { useMemo, useState } from "react";
-import { useGetAllProductsQuery } from "../action";
+import { useGetAllCategoriesQuery, useGetAllProductsQuery } from "../action";
 import ProductCard from "../components/productCard/ProductCard";
 import Loader from "../components/ui/Loader";
 import SearchIcon from "../components/ui/SearchIcon";
 import Select from "../components/ui/Select";
 import { useDebounce } from "../hooks/useDebounce";
-import { Product } from "../types/product";
 
 export default function Home() {
-  const [data, setData] = useState<Product[] | null>(null);
-  const [selectList, setSelectList] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 200);
-  const [error, setError] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
 
-  const { allProducts, isLoading } = useGetAllProductsQuery();
+  const { data, isLoading } = useGetAllProductsQuery();
+  const { data: selectList } = useGetAllCategoriesQuery();
 
   const filteredProductCategory = useMemo(() => {
-    if (!allProducts) return [];
+    if (!data) return [];
     const tmp = selectedCategory
-      ? allProducts.filter((item) => item.category === selectedCategory)
-      : allProducts;
+      ? data.filter((item) => item.category === selectedCategory)
+      : data;
     return debouncedSearchValue
       ? tmp.filter(
           (item) =>
@@ -30,8 +26,7 @@ export default function Home() {
             item.title.toLowerCase().includes(debouncedSearchValue)
         )
       : tmp;
-  }, [selectedCategory, allProducts, debouncedSearchValue]);
-  if (error) console.log(error);
+  }, [selectedCategory, data, debouncedSearchValue]);
 
   return (
     <>
@@ -56,7 +51,7 @@ export default function Home() {
             <div>
               <Select
                 defaultValue="Select category..."
-                options={selectList}
+                options={selectList || []}
                 handleChange={setSelectedCategory}
               />
             </div>

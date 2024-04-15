@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllProducts } from "../../action";
-import { clearCart } from "../../store/cart";
+import { useGetAllProductsQuery } from "../../action";
 import { useAppDispatch, useAppSelector } from "../../store";
+import { clearCart } from "../../store/cart";
 import { CartItem } from "../../types/cart";
-import { Product } from "../../types/product";
 import Button from "../ui/Button";
 import CartProductCard from "./CartProductCard";
 
@@ -19,21 +17,7 @@ export default function Cart({
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
-  useEffect(() => {
-    const fetchApi = async () => {
-      try {
-        // setIsLoading(true);
-        const res = await getAllProducts();
-        setProducts(res);
-      } catch (error) {
-        // setError("Something went wrong !");
-      } finally {
-        // setIsLoading(false);
-      }
-    };
-    fetchApi();
-  }, []);
+  const { data: products } = useGetAllProductsQuery();
 
   const checkout = () => {
     dispatch(clearCart());
@@ -86,9 +70,7 @@ export default function Cart({
           </div>
 
           {cart.cartItems.map((cartProduct: CartItem) => {
-            const product: Product = products.find(
-              (p) => p.id === cartProduct.id
-            )!;
+            const product = products?.find((p) => p.id === cartProduct.id);
             if (product) {
               return (
                 <CartProductCard
@@ -112,7 +94,7 @@ export default function Cart({
               }).format(
                 cart.cartItems.reduce(
                   (total: number, cartProduct: CartItem) => {
-                    const product = products.find(
+                    const product = products?.find(
                       (item) => item.id === cartProduct.id
                     );
                     return total + (product?.price || 0) * cartProduct.quantity;
