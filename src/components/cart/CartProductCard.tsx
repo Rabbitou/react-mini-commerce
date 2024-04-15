@@ -1,9 +1,9 @@
+import { useAppDispatch } from "../../store";
 import {
   addToCart,
   decreaseCartQuantity,
   removeFromCart,
 } from "../../store/cart";
-import { useAppDispatch, useAppSelector } from "../../store";
 import { CartItem } from "../../types/cart";
 import { Product } from "../../types/product";
 import Button from "../ui/Button";
