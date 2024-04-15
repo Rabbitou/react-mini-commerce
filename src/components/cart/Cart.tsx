@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Button from "../ui/Button";
-import { useCart } from "../../hooks/useCart";
-import { CartItem } from "../../types/cart";
-import { Product } from "../../types/product";
-import { getAllProducts } from "../../action";
 import { useNavigate } from "react-router-dom";
+import { useGetAllProductsQuery } from "../../action";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { clearCart } from "../../store/cart";
+import { CartItem } from "../../types/cart";
+import Button from "../ui/Button";
 import CartProductCard from "./CartProductCard";
 
 export default function Cart({
@@ -14,27 +13,14 @@ export default function Cart({
   setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
   showCart: boolean;
 }) {
-  const { cartItems, clearCart, cartQuantity } = useCart();
+  const cart = useAppSelector((state) => state.cart);
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
-  useEffect(() => {
-    const fetchApi = async () => {
-      try {
-        // setIsLoading(true);
-        const res = await getAllProducts();
-        setProducts(res);
-      } catch (error) {
-        // setError("Something went wrong !");
-      } finally {
-        // setIsLoading(false);
-      }
-    };
-    fetchApi();
-  }, []);
+  const { data: products } = useGetAllProductsQuery();
 
   const checkout = () => {
-    clearCart();
+    dispatch(clearCart());
     setShowCart(false);
     navigate("/");
   };
@@ -74,7 +60,7 @@ export default function Cart({
         <div className="relative flex-auto p-4 overflow-y-auto w-full border-b">
           {/* header */}
           <div className="flex justify-between items-center mb-2">
-            <p className="font-semibold">{cartQuantity} Articles</p>
+            <p className="font-semibold">{cart.cartQuantity} Articles</p>
             <Button
               onClick={() => clearCart()}
               style={"font-medium text-sm hover:opacity-40"}
@@ -83,10 +69,8 @@ export default function Cart({
             </Button>
           </div>
 
-          {cartItems.map((cartProduct: CartItem) => {
-            const product: Product = products.find(
-              (p) => p.id === cartProduct.id
-            )!;
+          {cart.cartItems.map((cartProduct: CartItem) => {
+            const product = products?.find((p) => p.id === cartProduct.id);
             if (product) {
               return (
                 <CartProductCard
@@ -108,19 +92,22 @@ export default function Cart({
                 style: "currency",
                 currency: "EUR",
               }).format(
-                cartItems.reduce((total: number, cartProduct: CartItem) => {
-                  const product = products.find(
-                    (item) => item.id === cartProduct.id
-                  );
-                  return total + (product?.price || 0) * cartProduct.quantity;
-                }, 0)
+                cart.cartItems.reduce(
+                  (total: number, cartProduct: CartItem) => {
+                    const product = products?.find(
+                      (item) => item.id === cartProduct.id
+                    );
+                    return total + (product?.price || 0) * cartProduct.quantity;
+                  },
+                  0
+                )
               )}
             </span>
           </div>
           <Button
             onClick={checkout}
             style="flex justify-center items-center w-full px-10 py-3 space-x-1 text-white bg-black rounded-none hover:opacity-80 cursor-pointer whitespace-nowrap disabled:opacity-70 disabled:cursor-default"
-            disabled={cartItems.length < 1}
+            disabled={cart.cartItems.length < 1}
           >
             <p className="capitalize">checkout</p>
           </Button>

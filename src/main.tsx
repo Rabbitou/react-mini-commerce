@@ -1,16 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
-import { BrowserRouter } from "react-router-dom";
-import { CartProvider } from "./context/cart.tsx";
+import { Provider } from "react-redux";
+import { store } from "./store.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <CartProvider>
+      <Provider store={store}>
         <App />
-      </CartProvider>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>
 );

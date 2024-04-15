@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import CartIcon from "../ui/CartIcon";
+import { useAppSelector } from "../../store";
 import Cart from "../cart/Cart";
-import { useCart } from "../../hooks/useCart";
+import CartIcon from "../ui/CartIcon";
 
 export default function Navbar() {
   const [showCart, setShowCart] = useState(false);
-  const { cartQuantity } = useCart();
+  const cart = useAppSelector((state) => state.cart);
 
   return (
     <>
@@ -27,7 +27,7 @@ export default function Navbar() {
           onClick={() => setShowCart((prev) => !prev)}
         >
           <div className="flex items-center justify-center absolute rounded-full bg-red-500 top-0 right-0 h-5 w-5">
-            <span className="text-sm">{cartQuantity}</span>
+            <span className="text-sm">{cart.cartQuantity}</span>
           </div>
           <CartIcon width={35} height={35} fillColor="white" />
         </div>
